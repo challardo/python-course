@@ -19,7 +19,7 @@ with column2:
 st.write("Below you can find some python apps.")
 
 
-col3, empty_col, col4 = st.columns(1.5, 0, 1.5)
+col3, col4 = st.columns(2, gap="small")
 proyects = pd.read_csv("data.csv", sep=";")
 
 with col3:
