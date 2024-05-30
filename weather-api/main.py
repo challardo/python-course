@@ -20,6 +20,20 @@ def get_temperature(station, date):
 
     return {"station": station, "date": date, "temperature": temperature}
 
+@app.route("/api/v1/<station>")
+def get_all_station_data(station):
+        filename = "./data_small/TG_STAID" + str(station).zfill(6) + ".txt"
+        df = pd.read_csv(filename, skiprows=20, parse_dates=["    DATE"])
+        
+        return  df.to_dict(orient="records")
+
+@app.route("/api/v1/yearly/<station>/<year>")
+def get_station_temp_by_year(station,year):
+        filename = "./data_small/TG_STAID" + str(station).zfill(6) + ".txt"
+        df = pd.read_csv(filename, skiprows=20, parse_dates=["    DATE"])
+        df["    DATE"] = df["    DATE"].astype(str)
+        response =  df.loc[df["    DATE"].str.startswith(str(year))]
+        return  response.to_dict(orient="records")
 
 if __name__ == "__main__":
     app.run(debug=True)
