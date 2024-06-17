@@ -1,8 +1,10 @@
 import requests
 import selectorlib
-import time
+import sqlite3
 
 URL = "https://blog.pythonanywhere.com/"
+
+connection = sqlite3.connect("test.db")
 
 
 def scrape(url):
@@ -22,21 +24,26 @@ def send_email():
 
 
 def store(extracted):
-    with open("data.txt", "a") as file:
-        file.write(extracted + "\n")
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO posts VALUES (?,?)", (None, extracted))
+    connection.commit()
 
 
-def read():
-    with open("data.txt", "r") as file:
-        return file.read()
+def read(extracted):
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT * FROM posts WHERE title='{extracted}'")
+    rows = cursor.fetchall()
+    return rows
 
 
 if __name__ == "__main__":
-    source = scrape(URL)
-    extracted = extract(source)
+    scraped = scrape(URL)
+    extracted = extract(scraped)
     print(extracted)
-    content = read()
+
     if extracted != "None":
-        if extracted not in content:
+        row = read(extracted)
+        print("row", row)
+        if not row:
             store(extracted)
             send_email()
