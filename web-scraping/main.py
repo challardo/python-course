@@ -7,20 +7,21 @@ URL = "https://blog.pythonanywhere.com/"
 connection = sqlite3.connect("test.db")
 
 
-def scrape(url):
-    response = requests.get(url)
-    source = response.text
-    return source
+class Event:
+    def scrape(self, url):
+        response = requests.get(url)
+        source = response.text
+        return source
+
+    def extract(self, source):
+        extractor = selectorlib.Extractor.from_yaml_file("extract.yaml")
+        value = extractor.extract(source)["blog"]
+        return value
 
 
-def extract(source):
-    extractor = selectorlib.Extractor.from_yaml_file("extract.yaml")
-    value = extractor.extract(source)["blog"]
-    return value
-
-
-def send_email():
-    print("email sent")
+class Email:
+    def send():
+        print("email sent")
 
 
 def store(extracted):
@@ -37,8 +38,9 @@ def read(extracted):
 
 
 if __name__ == "__main__":
-    scraped = scrape(URL)
-    extracted = extract(scraped)
+    event = Event()
+    scraped = event.scrape(URL)
+    extracted = event.extract(scraped)
     print(extracted)
 
     if extracted != "None":
@@ -46,4 +48,5 @@ if __name__ == "__main__":
         print("row", row)
         if not row:
             store(extracted)
-            send_email()
+            email = Email()
+            email.send()
