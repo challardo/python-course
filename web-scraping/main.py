@@ -4,8 +4,6 @@ import sqlite3
 
 URL = "https://blog.pythonanywhere.com/"
 
-connection = sqlite3.connect("test.db")
-
 
 class Event:
     def scrape(self, url):
@@ -20,21 +18,24 @@ class Event:
 
 
 class Email:
-    def send():
+    def send(self):
         print("email sent")
 
 
-def store(extracted):
-    cursor = connection.cursor()
-    cursor.execute("INSERT INTO posts VALUES (?,?)", (None, extracted))
-    connection.commit()
+class Database:
+    def __init__(self, database_path):
+        self.connection = sqlite3.connect(database_path)
 
+    def store(self, extracted):
+        cursor = self.connection.cursor()
+        cursor.execute("INSERT INTO posts VALUES (?,?)", (None, extracted))
+        self.connection.commit()
 
-def read(extracted):
-    cursor = connection.cursor()
-    cursor.execute(f"SELECT * FROM posts WHERE title='{extracted}'")
-    rows = cursor.fetchall()
-    return rows
+    def read(self, extracted):
+        cursor = self.connection.cursor()
+        cursor.execute(f"SELECT * FROM posts WHERE title='{extracted}'")
+        rows = cursor.fetchall()
+        return rows
 
 
 if __name__ == "__main__":
@@ -44,9 +45,10 @@ if __name__ == "__main__":
     print(extracted)
 
     if extracted != "None":
-        row = read(extracted)
+        database = Database(database_path="test.db")
+        row = database.read(extracted)
         print("row", row)
         if not row:
-            store(extracted)
+            database.store(extracted)
             email = Email()
             email.send()
