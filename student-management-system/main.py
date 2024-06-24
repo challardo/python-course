@@ -21,6 +21,15 @@ import sys
 import sqlite3
 
 
+class DatabaseConnection:
+    def __init__(self, database_file="database.db"):
+        self.database_file = database_file
+
+    def connect(self):
+        connection = sqlite3.connect(self.database_file)
+        return connection
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -74,7 +83,7 @@ class MainWindow(QMainWindow):
         self.statusbar.addWidget(delete_button)
 
     def load_data(self):
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection().connect()
         result = connection.execute("SELECT * FROM students")
         self.table.setRowCount(0)
 
@@ -138,7 +147,7 @@ class InsertDialog(QDialog):
         name = self.student_name_edit.text()
         course = self.course_name.itemText(self.course_name.currentIndex())
         mobile = self.mobile_name_edit.text()
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute(
             "INSERT INTO students (name,course,mobile) VALUES (?,?,?)",
@@ -176,7 +185,7 @@ class SearchDialog(QDialog):
 
     def search(self):
         name = self.student_name_edit.text()
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         result = cursor.execute("SELECT * FROM students WHERE name = ?", (name,))
         rows = list(result)
@@ -226,7 +235,7 @@ class EditDialog(QDialog):
         self.setLayout(layout)
 
     def update_student(self):
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute(
             "UPDATE students SET name= ?, course=?, mobile=? WHERE id= ?",
@@ -265,7 +274,7 @@ class DeleteDialog(QDialog):
         no_button.clicked.connect(self.close)
 
     def delete_student(self):
-        connection = sqlite3.connect("database.db")
+        connection = DatabaseConnection().connect()
         cursor = connection.cursor()
         cursor.execute("DELETE from students WHERE id = ?", (self.student_id,))
         connection.commit()
