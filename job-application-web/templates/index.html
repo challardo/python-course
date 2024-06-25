@@ -44,7 +44,15 @@
             </div>
         </div>
         <button class="btn btn-primary mb-4">Submit</button>
-
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success">
+            {% for message in messages %}
+            {{message}}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
     </form>
 </div>
 </body>
