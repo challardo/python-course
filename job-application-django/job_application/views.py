@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import ApplicationForm
 from .models import Form
 from django.contrib import messages
+from django.core.mail import EmailMessage
 
 
 def index(request):
@@ -21,6 +22,11 @@ def index(request):
                 date=date,
                 occupation=occupation,
             )
+            message_body = "A new job application was submitted."
+            email_message = EmailMessage(
+                "Form submittion confirmation", message_body, to=[email]
+            )
+            email_message.send()
 
             messages.success(request, "Form submitted successfully.")
             return redirect("/")
