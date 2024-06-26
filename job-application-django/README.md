@@ -24,3 +24,8 @@ migration
 ```
 python manage.py migrate
 ```
+
+create super user to access the admin page /admin 
+```
+python manage.py createsuperuser
+```
